@@ -1,0 +1,12 @@
+torch
+torchvision
+monai
+pydicom
+numpy
+pandas
+matplotlib
+scikit-learn
+dvc
+fastapi
+uvicorn
+pytest
