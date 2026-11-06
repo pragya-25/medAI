@@ -14,7 +14,7 @@ Chest X-ray pneumonia detection (RSNA dataset) with Grad-CAM explanations, an Or
 
 ## Progress
 - [x] Step 1: Setup, dataset choice, DICOM basics
-- [ ] Step 2: Preprocessing and DVC
+- [x] Step 2: Preprocessing and DVC
 - [ ] Step 3: Training
 - [ ] Step 4: Grad-CAM
 - [ ] Step 5: Orthanc + inference service
