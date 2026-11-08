@@ -13,3 +13,5 @@ kaggle.json
 *.pth
 service/data/
 service/models/best.pt
+samples/
+samples.zip
