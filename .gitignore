@@ -11,3 +11,5 @@ kaggle.json
 /data/processed
 *.pt
 *.pth
+service/data/
+service/models/best.pt

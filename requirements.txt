@@ -10,3 +10,5 @@ dvc
 fastapi
 uvicorn
 pytest
+requests
+pillow
