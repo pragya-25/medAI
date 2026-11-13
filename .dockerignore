@@ -1,0 +1,8 @@
+.git
+data
+samples
+samples.zip
+notebooks
+viewer
+__pycache__
+*.pyc

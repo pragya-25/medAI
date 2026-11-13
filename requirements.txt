@@ -12,3 +12,4 @@ uvicorn
 pytest
 requests
 pillow
+httpx

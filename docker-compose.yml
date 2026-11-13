@@ -1,9 +1,11 @@
+# Run everything:  docker compose up --build
+# Needs service/models/best.pt and service/models/metrics.json (see README).
 services:
   orthanc:
     image: orthancteam/orthanc
     ports:
-      - "8042:8042"   # web UI + REST API
-      - "4242:4242"   # DICOM protocol port (for scanners/modalities)
+      - "8042:8042"   # Orthanc web UI + REST API
+      - "4242:4242"   # DICOM protocol port
     environment:
       ORTHANC__AUTHENTICATION_ENABLED: "false"   # local demo only, never do this in production
       ORTHANC__REMOTE_ACCESS_ALLOWED: "true"
@@ -11,5 +13,38 @@ services:
     volumes:
       - orthanc-data:/var/lib/orthanc/db
 
+  worker:
+    build: .
+    command: python -m service.worker
+    environment:
+      ORTHANC_URL: http://orthanc:8042      # container-to-container name, not localhost
+    volumes:
+      - ./service/models:/app/service/models:ro
+      - medai-data:/app/service/data
+    depends_on:
+      - orthanc
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CORS_ORIGINS: http://localhost:8080,http://localhost:5173
+    volumes:
+      - medai-data:/app/service/data       # same database the worker writes to
+    depends_on:
+      - worker
+
+  viewer:
+    build:
+      context: ./viewer
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
 volumes:
   orthanc-data:
+  medai-data:

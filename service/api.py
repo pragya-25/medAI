@@ -1,4 +1,5 @@
 """REST API the React viewer will call.   Run: uvicorn service.api:app --port 8000"""
+import os
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
@@ -9,7 +10,8 @@ from fastapi.responses import FileResponse
 from service import db
 
 app = FastAPI(title="MedAI API", description="FOR EDUCATION ONLY. NOT FOR CLINICAL USE.")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], allow_methods=["*"], allow_headers=["*"])
+ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080").split(",")
+app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_methods=["*"], allow_headers=["*"])
 db.init()
 
 
