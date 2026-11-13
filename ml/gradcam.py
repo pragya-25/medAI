@@ -31,7 +31,7 @@ def gradcam(model, x):
     cam = F.interpolate(cam, size=x.shape[-2:], mode="bilinear", align_corners=False)[0, 0]
     cam = cam.detach().cpu().numpy()
     cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)  # normalize to 0..1
-    return cam, float(torch.sigmoid(logit))
+    return cam, float(torch.sigmoid(logit).detach())
 
 
 def overlay(gray01, cam, alpha=0.4):
