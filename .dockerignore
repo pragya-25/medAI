@@ -4,5 +4,7 @@ samples
 samples.zip
 notebooks
 viewer
+service/data
+service/models
 __pycache__
 *.pyc

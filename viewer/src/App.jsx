@@ -78,9 +78,6 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="banner">
-        <strong>FOR EDUCATION ONLY. NOT FOR CLINICAL USE.</strong> Do not use for diagnosis or treatment decisions.
-      </div>
       <Header stats={stats} theme={theme} onToggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")} error={error} />
       <main className="layout">
         <Worklist studies={visible} stats={stats} selected={selected} onSelect={setSelected}
@@ -101,6 +98,7 @@ export default function App() {
           </div>
         )}
       </main>
+      <footer className="footer">Education project · not for clinical use</footer>
       <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
   );

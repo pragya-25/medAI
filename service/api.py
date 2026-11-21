@@ -13,6 +13,7 @@ app = FastAPI(title="MedAI API", description="FOR EDUCATION ONLY. NOT FOR CLINIC
 ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080").split(",")
 app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_methods=["*"], allow_headers=["*"])
 db.init()
+HEATMAP_DIR = os.environ.get("MEDAI_OUT", "service/data/heatmaps")
 
 
 @app.get("/studies")
@@ -34,8 +35,23 @@ def get_study(study_id: str):
 
 @app.get("/studies/{study_id}/heatmap")
 def heatmap(study_id: str):
+    return _png(study_id, ".png")
+
+
+def _png(study_id: str, suffix: str):
+    """Resolve the image by file NAME inside the heatmap folder.
+
+    Older rows stored full Windows paths (backslashes), which do not resolve on Linux/Docker.
+    Taking only the file name makes every row work on every OS.
+    """
     s = get_study(study_id)
-    return FileResponse(s["heatmap_path"], media_type="image/png")
+    name = os.path.basename(s["heatmap_path"].replace("\\", "/"))
+    if suffix != ".png":
+        name = name[: -len(".png")] + suffix
+    path = os.path.join(HEATMAP_DIR, name)
+    if not os.path.isfile(path):
+        raise HTTPException(404, "Image file not found")
+    return FileResponse(path, media_type="image/png")
 
 
 class Decision(BaseModel):
@@ -78,5 +94,4 @@ def full_audit():
 
 @app.get("/studies/{study_id}/image")
 def image(study_id: str):
-    s = get_study(study_id)
-    return FileResponse(s["heatmap_path"].replace(".png", "_orig.png"), media_type="image/png")
+    return _png(study_id, "_orig.png")

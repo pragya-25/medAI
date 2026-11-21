@@ -62,3 +62,23 @@ def test_history_is_append_only(study):
 def test_invalid_decision_rejected(study, body):
     assert client.post(f"/studies/{study}/decision", json=body).status_code == 422
     assert client.get(f"/studies/{study}/audit").json() == []
+
+
+def test_image_endpoints_resolve_windows_style_paths(study):
+    """Rows written on Windows store 'folder\\file.png'. They must still resolve on Linux/Docker."""
+    import os
+    from service.api import HEATMAP_DIR
+
+    os.makedirs(HEATMAP_DIR, exist_ok=True)
+    for name in ("win-study.png", "win-study_orig.png"):
+        with open(os.path.join(HEATMAP_DIR, name), "wb") as f:
+            f.write(b"\x89PNG\r\n\x1a\n")
+    with db.conn() as c:
+        c.execute(
+            "INSERT INTO results (study_id, probability, predicted_positive, threshold, model_version, heatmap_path) "
+            "VALUES (?,?,?,?,?,?)",
+            ("win-study", 0.5, 1, 0.34, "m", "service/data/heatmaps\\win-study.png"),
+        )
+    assert client.get("/studies/win-study/image").status_code == 200
+    assert client.get("/studies/win-study/heatmap").status_code == 200
+    assert client.get("/studies/test-study-1/image").status_code == 404  # file missing -> clean 404, not a crash

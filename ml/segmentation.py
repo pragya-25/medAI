@@ -51,6 +51,7 @@ def get_transforms(train):
 
 def make_datasets(root="/content/msd", cache_rate=1.0, num_workers=2):
     """Downloads the dataset on first use (about 1.5 GB). Splits the 41 labelled scans into train / validation."""
+    os.makedirs(root, exist_ok=True)  # DecathlonDataset requires the folder to exist before it downloads into it
     kw = dict(root_dir=root, task=TASK, download=True, seed=0, val_frac=0.2,
               cache_rate=cache_rate, num_workers=num_workers)
     train_ds = DecathlonDataset(section="training", transform=get_transforms(True), **kw)
